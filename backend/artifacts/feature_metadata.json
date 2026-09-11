@@ -1,0 +1,28 @@
+{
+  "feature_order": [
+    "cgpa",
+    "tenth_percentage",
+    "twelfth_percentage",
+    "backlog_history_count",
+    "programming_score",
+    "sql_score",
+    "dsa_score",
+    "web_dev_score",
+    "git_score",
+    "cloud_score",
+    "aptitude_score",
+    "logical_score",
+    "coding_score",
+    "communication_score",
+    "interview_score",
+    "presentation_score",
+    "verified_project_count",
+    "project_complexity_score",
+    "verified_internship_count",
+    "verified_certification_count",
+    "open_source_score",
+    "hackathon_score",
+    "leadership_score"
+  ],
+  "schema": "feature_schema_v1"
+}

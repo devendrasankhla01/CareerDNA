@@ -1,0 +1,70 @@
+{
+  "faculty_technical": {
+    "email": "kavya.raghavan@northfielddemo.edu",
+    "password": "FacultyDemo123!",
+    "name": "Dr. Kavya Raghavan",
+    "categories": [
+      "TECHNICAL_SKILL",
+      "PROJECT",
+      "CERTIFICATION"
+    ]
+  },
+  "faculty_ops": {
+    "email": "rohit.deshmukh@northfielddemo.edu",
+    "password": "FacultyDemo123!",
+    "name": "Rohit Deshmukh",
+    "categories": [
+      "INTERNSHIP",
+      "ACTIVITY"
+    ]
+  },
+  "tpo_admin": {
+    "email": "meera.iyer@northfielddemo.edu",
+    "password": "TPOAdmin123!",
+    "name": "Meera Iyer"
+  },
+  "department_cse": {
+    "email": "dept.cse@northfielddemo.edu",
+    "password": "DeptDemo123!",
+    "name": "CSE Office"
+  },
+  "department_ise": {
+    "email": "dept.ise@northfielddemo.edu",
+    "password": "DeptDemo123!",
+    "name": "ISE Office"
+  },
+  "recruiter_verve": {
+    "email": "priya.nair@vervetech-demo.example",
+    "password": "RecruiterDemo123!",
+    "name": "Priya Nair (VerveTech)"
+  },
+  "demo_otp": "246810",
+  "student_note": [
+    "Log in with any imported USN + the demo OTP",
+    "Demo student roster available with: python -m scripts.seed_demo --demo"
+  ],
+  "primary_student": {
+    "usn": "3PM24CS500",
+    "name": "Aarav Mehta",
+    "email": "3pm24cs500@northfielddemo.edu",
+    "note": "Near-Ready flagship: one VERIFIED project + one PENDING project (faculty verification queue), SQL & communication gaps, target FULL_STACK."
+  },
+  "ready_demo_student": {
+    "usn": "2PM24EC119",
+    "name": "Tanvi Ghosh",
+    "email": "2pm24ec119@northfielddemo.edu",
+    "branch": "ECE",
+    "semester": 4,
+    "readiness": 85.0,
+    "category": "READY"
+  },
+  "needs_training_demo_student": {
+    "usn": "3PM24EC058",
+    "name": "Anaya Raghavan",
+    "email": "3pm24ec058@northfielddemo.edu",
+    "branch": "ECE",
+    "semester": 6,
+    "readiness": 48.0,
+    "category": "NEEDS_TRAINING"
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "model_name": "Logistic Regression",
+  "model_version": "careerdna-v1.0",
+  "feature_schema": "feature_schema_v1",
+  "feature_order": [
+    "cgpa",
+    "tenth_percentage",
+    "twelfth_percentage",
+    "backlog_history_count",
+    "programming_score",
+    "sql_score",
+    "dsa_score",
+    "web_dev_score",
+    "git_score",
+    "cloud_score",
+    "aptitude_score",
+    "logical_score",
+    "coding_score",
+    "communication_score",
+    "interview_score",
+    "presentation_score",
+    "verified_project_count",
+    "project_complexity_score",
+    "verified_internship_count",
+    "verified_certification_count",
+    "open_source_score",
+    "hackathon_score",
+    "leadership_score"
+  ],
+  "feature_groups": {
+    "Academic": [
+      "cgpa",
+      "tenth_percentage",
+      "twelfth_percentage",
+      "backlog_history_count"
+    ],
+    "Technical": [
+      "programming_score",
+      "sql_score",
+      "dsa_score",
+      "web_dev_score",
+      "git_score",
+      "cloud_score",
+      "coding_score"
+    ],
+    "Practical": [
+      "verified_project_count",
+      "project_complexity_score",
+      "verified_internship_count",
+      "verified_certification_count",
+      "open_source_score"
+    ],
+    "Aptitude": [
+      "aptitude_score",
+      "logical_score"
+    ],
+    "Soft Skills": [
+      "communication_score",
+      "interview_score",
+      "presentation_score"
+    ],
+    "Activities": [
+      "hackathon_score",
+      "leadership_score"
+    ]
+  },
+  "dataset_type": "synthetic",
+  "dataset_size": 4000,
+  "test_size": 800,
+  "target_distribution": {
+    "placed": 0.66,
+    "not_placed": 0.34
+  },
+  "random_seed": 42,
+  "cv_folds": 5,
+  "cv_f1_selected": 0.8373,
+  "explainability": "linear coefficients",
+  "metrics": {
+    "Logistic Regression": {
+      "accuracy": 0.7863,
+      "precision": 0.8062,
+      "recall": 0.8902,
+      "f1": 0.8461,
+      "roc_auc": 0.8272,
+      "confusion_matrix": [
+        [
+          159,
+          113
+        ],
+        [
+          58,
+          470
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.7475,
+      "precision": 0.7629,
+      "recall": 0.8958,
+      "f1": 0.824,
+      "roc_auc": 0.7955,
+      "confusion_matrix": [
+        [
+          125,
+          147
+        ],
+        [
+          55,
+          473
+        ]
+      ]
+    }
+  },
+  "selected_metrics": {
+    "accuracy": 0.7863,
+    "precision": 0.8062,
+    "recall": 0.8902,
+    "f1": 0.8461,
+    "roc_auc": 0.8272,
+    "confusion_matrix": [
+      [
+        159,
+        113
+      ],
+      [
+        58,
+        470
+      ]
+    ]
+  },
+  "global_importance": {
+    "communication_score": 0.3691,
+    "tenth_percentage": 0.3249,
+    "hackathon_score": 0.3156,
+    "backlog_history_count": 0.3126,
+    "programming_score": 0.3125,
+    "verified_project_count": 0.2979,
+    "aptitude_score": 0.259,
+    "logical_score": 0.2235,
+    "open_source_score": 0.2233,
+    "project_complexity_score": 0.2202,
+    "interview_score": 0.1821,
+    "dsa_score": 0.1567,
+    "presentation_score": 0.1519,
+    "coding_score": 0.1321,
+    "web_dev_score": 0.1156,
+    "sql_score": 0.1117,
+    "cgpa": 0.1108,
+    "verified_internship_count": 0.1071,
+    "cloud_score": 0.0801,
+    "verified_certification_count": 0.0468,
+    "git_score": 0.0276,
+    "twelfth_percentage": 0.0252,
+    "leadership_score": 0.0091
+  },
+  "shap_global_importance": {
+    "communication_score": 0.3691,
+    "tenth_percentage": 0.3249,
+    "hackathon_score": 0.3156,
+    "backlog_history_count": 0.3126,
+    "programming_score": 0.3125,
+    "verified_project_count": 0.2979,
+    "aptitude_score": 0.259,
+    "logical_score": 0.2235,
+    "open_source_score": 0.2233,
+    "project_complexity_score": 0.2202,
+    "interview_score": 0.1821,
+    "dsa_score": 0.1567,
+    "presentation_score": 0.1519,
+    "coding_score": 0.1321,
+    "web_dev_score": 0.1156,
+    "sql_score": 0.1117,
+    "cgpa": 0.1108,
+    "verified_internship_count": 0.1071,
+    "cloud_score": 0.0801,
+    "verified_certification_count": 0.0468,
+    "git_score": 0.0276,
+    "twelfth_percentage": 0.0252,
+    "leadership_score": 0.0091
+  },
+  "selection_rule": "highest (F1 + ROC-AUC) on held-out test split, with K-fold F1 as stability check",
+  "readiness_thresholds": {
+    "needs_training_lt": 60,
+    "near_ready_lt": 80
+  },
+  "trained_at": "2026-09-10T17:22:21.944370"
+}

@@ -1,0 +1,38 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 658 >>
+stream
+BT /F1 16 Tf 60 760 Td (Project Summary - Inventory Management Web App) Tj ET
+BT /F1 11 Tf 60 720 Td (Student: Aarav Mehta \(3PM24CS500\), CSE, Semester 6) Tj ET
+BT /F1 11 Tf 60 702 Td (Role: Full-Stack Developer \(individual project\)) Tj ET
+BT /F1 11 Tf 60 684 Td (Stack: React \(frontend\), FastAPI \(REST API\), PostgreSQL \(database\)) Tj ET
+BT /F1 11 Tf 60 666 Td (Features: JWT authentication, CRUD inventory, stock alerts, CSV export.) Tj ET
+BT /F1 11 Tf 60 648 Td (Complexity claimed: Advanced \(auth, REST API, relational DB, reporting\)) Tj ET
+BT /F1 11 Tf 60 630 Td (Synthetic demo evidence generated for the CareerDNA hackathon prototype.) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000950 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1020
+%%EOF
