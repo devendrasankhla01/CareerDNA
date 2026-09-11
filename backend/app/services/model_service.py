@@ -103,15 +103,19 @@ class ModelService:
         proba = float(self.pipeline.predict_proba(X)[0][1])
 
         if hasattr(clf, "estimators_"):
-            import shap
-            if self._explainer is None:
-                self._explainer = shap.TreeExplainer(clf)
-            sv = self._explainer.shap_values(Xp, silent=True)
-            if isinstance(sv, list):
-                sv = sv[1]
-            values = np.asarray(sv, dtype=float)[0]
-            ev = np.asarray(self._explainer.expected_value, dtype=float)
-            baseline = float(ev.ravel()[0]) if ev.size else 0.0
+            try:
+                import shap
+                if self._explainer is None:
+                    self._explainer = shap.TreeExplainer(clf)
+                sv = self._explainer.shap_values(Xp, silent=True)
+                if isinstance(sv, list):
+                    sv = sv[1]
+                values = np.asarray(sv, dtype=float)[0]
+                ev = np.asarray(self._explainer.expected_value, dtype=float)
+                baseline = float(ev.ravel()[0]) if ev.size else 0.0
+            except ImportError:
+                values = np.zeros(len(FEATURE_ORDER))
+                baseline = 0.0
         else:  # linear model: exact additive contributions (log-odds space)
             coef = np.asarray(clf.coef_).ravel()
             values = coef * Xp[0]
