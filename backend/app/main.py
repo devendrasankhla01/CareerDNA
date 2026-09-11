@@ -19,19 +19,35 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("careerdna")
 
 
+_initialized = False
+
+def ensure_initialized():
+    global _initialized
+    if _initialized:
+        return
+    try:
+        Base.metadata.create_all(bind=engine)
+        loaded = model_service.load()
+        if loaded:
+            logger.info("Readiness model loaded: %s", model_service.version)
+        else:
+            logger.warning("Readiness model NOT loaded: %s", model_service.error)
+        from app.services import reference_service
+        reference_service.ensure_reference_data()
+        _initialized = True
+        logger.info("CareerDNA API ready (demo_mode=%s)", get_settings().demo_mode)
+    except Exception as exc:
+        logger.warning("Initialization warning: %s", exc)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
-    loaded = model_service.load()
-    if loaded:
-        logger.info("Readiness model loaded: %s", model_service.version)
-    else:
-        logger.warning("Readiness model NOT loaded: %s", model_service.error)
-    # ensure reference data exists (idempotent)
-    from app.services import reference_service
-    reference_service.ensure_reference_data()
-    logger.info("CareerDNA API ready (demo_mode=%s)", get_settings().demo_mode)
+    ensure_initialized()
     yield
+
+
+# Run fallback initialization immediately on import for serverless wrappers
+ensure_initialized()
 
 
 app = FastAPI(

@@ -9,7 +9,12 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
+from pathlib import Path
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parents[2]  # backend/
+load_dotenv(BASE_DIR / ".env")
+load_dotenv()  # also load from current working directory if different
 
 
 def _env_bool(name: str, default: str = "false") -> bool:
