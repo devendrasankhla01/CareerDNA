@@ -175,12 +175,72 @@ export default function Login() {
               <button className="btn-primary w-full" disabled={busy}>
                 {busy ? "Signing in…" : "Sign in"}
               </button>
-              <p className="flex items-start gap-1.5 text-[12px] leading-relaxed text-slate-400">
-                <GraduationCap className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                Staff accounts are provisioned by the institution. No self-registration.
-              </p>
             </form>
           )}
+
+          {/* 1-Click Demo Accounts */}
+          <div className="mt-6 border-t border-slate-100 pt-4">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              ⚡ 1-Click Demo Logins
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("student");
+                  setStep("usn");
+                  usnForm.setValue("usn", "3PM24CS500");
+                }}
+                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11.5px] font-medium text-slate-700 hover:border-navy-400 hover:bg-white"
+              >
+                🎓 Student (Aarav)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("staff");
+                  staffForm.setValue("email", "meera.iyer@northfielddemo.edu");
+                  staffForm.setValue("password", "TPOAdmin123!");
+                }}
+                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11.5px] font-medium text-slate-700 hover:border-navy-400 hover:bg-white"
+              >
+                👔 TPO Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("staff");
+                  staffForm.setValue("email", "dept.cse@northfielddemo.edu");
+                  staffForm.setValue("password", "DeptDemo123!");
+                }}
+                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11.5px] font-medium text-slate-700 hover:border-navy-400 hover:bg-white"
+              >
+                🏛️ HOD (CSE)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("staff");
+                  staffForm.setValue("email", "priya.nair@vervetech-demo.example");
+                  staffForm.setValue("password", "RecruiterDemo123!");
+                }}
+                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11.5px] font-medium text-slate-700 hover:border-navy-400 hover:bg-white"
+              >
+                🏢 Recruiter (VerveTech)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTab("staff");
+                  staffForm.setValue("email", "kavya.raghavan@northfielddemo.edu");
+                  staffForm.setValue("password", "FacultyDemo123!");
+                }}
+                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11.5px] font-medium text-slate-700 hover:border-navy-400 hover:bg-white"
+              >
+                👨‍🏫 Faculty Verifier
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
