@@ -78,6 +78,12 @@ export async function api<T = any>(path: string, opts: ApiOpts = {}): Promise<T>
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
+    if (text.trim().startsWith("<!doctype") || text.trim().startsWith("<html")) {
+      throw new ApiError(
+        502,
+        "Backend API is not deployed or unreachable on this domain. Please ensure the Python backend is deployed or set VITE_API_BASE_URL."
+      );
+    }
     data = { detail: text || res.statusText };
   }
 
@@ -86,5 +92,10 @@ export async function api<T = any>(path: string, opts: ApiOpts = {}): Promise<T>
     if (res.status === 401) clearSession();
     throw new ApiError(res.status, detail);
   }
+
+  if (!data || typeof data !== "object") {
+    throw new ApiError(500, "Invalid response received from server");
+  }
+
   return data as T;
 }
