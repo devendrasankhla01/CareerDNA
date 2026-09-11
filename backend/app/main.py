@@ -7,8 +7,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, faculty, model_info, placement, student, tpo
+from app.api import auth, documents, faculty, model_info, placement, student, tpo
 from app.core.config import get_settings
+from app.db.mongo import check_mongo_status
 from app.db.session import Base, engine
 from app.models import User  # noqa: F401  (register models)
 from app.services.model_service import model_service
@@ -61,6 +62,7 @@ app.include_router(faculty.router)
 app.include_router(tpo.router)
 app.include_router(model_info.router)
 app.include_router(placement.router)
+app.include_router(documents.router)
 
 
 @app.get("/api/health")
@@ -78,6 +80,7 @@ def health():
     return {
         "status": "ok",
         "database": "ok" if db_ok else "error",
+        "mongodb": check_mongo_status(),
         "model": model_service.version if model_service.available else "not_loaded",
         "demo_mode": s.demo_mode,
     }

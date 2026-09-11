@@ -57,6 +57,10 @@ class _Settings:
         self.secret_key = os.getenv("SECRET_KEY", "dev-only-secret-change-me")
         self.frontend_origin = os.getenv("FRONTEND_ORIGIN", "*")
 
+        # MongoDB settings (optional document store & activity logs)
+        self.mongodb_url = os.getenv("MONGODB_URL", "")
+        self.mongodb_db_name = os.getenv("MONGODB_DB_NAME", "careerdna")
+
         # Demo mode: allows fixed demo OTP when SMTP is not configured.
         # Never enable in a real institutional deployment.
         self.demo_mode = _env_bool("DEMO_MODE", "true")

@@ -31,6 +31,7 @@ from app.models import (
     User,
 )
 from app.services import matching_service
+from app.db.mongo import log_activity
 
 # allowed status transitions: status -> set(next statuses)
 TRANSITIONS: dict[str, set[str]] = {
@@ -94,6 +95,15 @@ def express_interest(db: Session, user: User, drive_id: int) -> PlacementCandida
         c.status = "INTERESTED"
         _history(db, c, old, "INTERESTED", user, "Student re-expressed interest")
     db.commit()
+
+    log_activity(
+        action="EXPRESS_INTEREST",
+        actor_id=user.id,
+        actor_role=user.role,
+        target_type="PLACEMENT_DRIVE",
+        target_id=drive_id,
+        details={"student_id": st.id, "usn": st.usn, "drive_title": drive.title},
+    )
     return c
 
 
@@ -122,6 +132,15 @@ def endorse_candidate(db: Session, dept_user: User, candidate_id: int,
         _history(db, c, old, old, dept_user, f"HOD Endorsement added: {c.hod_note}")
 
     db.commit()
+
+    log_activity(
+        action="HOD_ENDORSEMENT",
+        actor_id=dept_user.id,
+        actor_role=dept_user.role,
+        target_type="PLACEMENT_CANDIDATE",
+        target_id=candidate_id,
+        details={"student_id": st.id, "usn": st.usn, "note": c.hod_note, "drive_id": c.drive_id},
+    )
     return c
 
 
@@ -164,6 +183,15 @@ def nominate(db: Session, tpo: User, drive_id: int, student_ids: list[int],
         c.nominated_at = utcnow()
         nominated.append(sid)
     db.commit()
+
+    log_activity(
+        action="TPO_NOMINATION",
+        actor_id=tpo.id,
+        actor_role=tpo.role,
+        target_type="PLACEMENT_DRIVE",
+        target_id=drive_id,
+        details={"nominated_students": nominated, "note": note},
+    )
     return {"nominated": len(nominated), "skipped": skipped}
 
 
@@ -192,6 +220,15 @@ def company_transition(db: Session, user: User, drive_id: int, student_id: int,
         c.selection_note = note
     _history(db, c, old, new_status, user, note)
     db.commit()
+
+    log_activity(
+        action=f"RECRUITER_{new_status}",
+        actor_id=user.id,
+        actor_role=user.role,
+        target_type="PLACEMENT_CANDIDATE",
+        target_id=c.id,
+        details={"student_id": student_id, "drive_id": drive_id, "note": note},
+    )
     return c
 
 
