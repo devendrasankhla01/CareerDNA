@@ -291,6 +291,20 @@ def dept_placements(db: Session = Depends(get_db), user: User = Depends(require_
     return dept_service.placement_status(db, user.department.code)
 
 
+class EndorseIn(BaseModel):
+    note: str | None = None
+
+
+@router.post("/dept/candidates/{candidate_id}/endorse")
+def dept_endorse_candidate(candidate_id: int, data: EndorseIn = EndorseIn(),
+                          db: Session = Depends(get_db),
+                          user: User = Depends(require_department)):
+    c = placement_service.endorse_candidate(db, user, candidate_id, data.note)
+    return {"status": "ok", "candidate_id": c.id, "candidate_status": c.status,
+            "hod_endorsed": c.hod_endorsed, "hod_note": c.hod_note,
+            "message": "Student successfully endorsed and recommended to TPO."}
+
+
 class DeptUpdateIn(BaseModel):
     updates: dict
 

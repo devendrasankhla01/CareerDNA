@@ -34,7 +34,8 @@ from app.services import matching_service
 
 # allowed status transitions: status -> set(next statuses)
 TRANSITIONS: dict[str, set[str]] = {
-    "INTERESTED": {"NOMINATED", "WITHDRAWN"},
+    "INTERESTED": {"HOD_APPROVED", "NOMINATED", "WITHDRAWN"},
+    "HOD_APPROVED": {"NOMINATED", "WITHDRAWN"},
     "NOMINATED": {"COMPANY_REVIEWING", "SHORTLISTED", "WITHDRAWN"},
     "COMPANY_REVIEWING": {"SHORTLISTED", "INTERVIEW", "WITHDRAWN"},
     "SHORTLISTED": {"INTERVIEW", "SELECTED", "NOT_SELECTED", "WITHDRAWN"},
@@ -84,10 +85,42 @@ def express_interest(db: Session, user: User, drive_id: int) -> PlacementCandida
     if not s.allow_student_interest:
         raise HTTPException(403, "Institution policy does not currently allow student interest")
     c = get_candidate(db, drive_id, st.id)
-    if c and c.status != "INTERESTED":
+    if c and c.status not in ("INTERESTED", "WITHDRAWN"):
         return c
     if c is None:
         c = create_candidate(db, drive_id, st.id, "INTERESTED", actor=user, note="Student expressed interest")
+    else:
+        old = c.status
+        c.status = "INTERESTED"
+        _history(db, c, old, "INTERESTED", user, "Student re-expressed interest")
+    db.commit()
+    return c
+
+
+def endorse_candidate(db: Session, dept_user: User, candidate_id: int,
+                      note: str | None = None) -> PlacementCandidate:
+    """Department / HOD endorses a student's placement application for TPO nomination."""
+    if dept_user.role not in ("DEPARTMENT", "TPO_ADMIN"):
+        raise HTTPException(403, "Department or TPO access required to endorse candidates")
+    c = db.get(PlacementCandidate, candidate_id)
+    if not c:
+        raise HTTPException(404, "Candidate record not found")
+    st = c.student
+    if dept_user.role == "DEPARTMENT" and dept_user.department and st.branch != dept_user.department.code:
+        raise HTTPException(403, "Cannot endorse students from other departments")
+
+    old = c.status
+    c.hod_endorsed = True
+    c.hod_endorsed_by = dept_user.id
+    c.hod_endorsed_at = utcnow()
+    c.hod_note = note or "Endorsed and recommended by Department / HOD"
+
+    if old in ("INTERESTED", "HOD_APPROVED"):
+        c.status = "HOD_APPROVED"
+        _history(db, c, old, "HOD_APPROVED", dept_user, c.hod_note)
+    else:
+        _history(db, c, old, old, dept_user, f"HOD Endorsement added: {c.hod_note}")
+
     db.commit()
     return c
 
@@ -119,15 +152,16 @@ def nominate(db: Session, tpo: User, drive_id: int, student_ids: list[int],
         c = get_candidate(db, drive_id, sid)
         if c is None:
             c = create_candidate(db, drive_id, sid, "INTERESTED", actor=None)
-        if c.status == "INTERESTED":
+        old_status = c.status
+        if old_status in ("INTERESTED", "HOD_APPROVED"):
             c.status = "NOMINATED"
-        elif c.status not in ("NOMINATED",):
+            _history(db, c, old_status, "NOMINATED", tpo, note)
+        elif old_status not in ("NOMINATED",):
             # already further along; do not regress
             db.commit()
             continue
         c.nominated_by = tpo.id
         c.nominated_at = utcnow()
-        _history(db, c, "INTERESTED", "NOMINATED", tpo, note)
         nominated.append(sid)
     db.commit()
     return {"nominated": len(nominated), "skipped": skipped}
@@ -302,6 +336,9 @@ def student_journey(db: Session, st: Student) -> list[dict]:
             "title": d.title if d else None,
             "status": c.status,
             "match_score": c.match_score,
+            "hod_endorsed": bool(c.hod_endorsed),
+            "hod_note": c.hod_note,
+            "hod_endorsed_at": c.hod_endorsed_at.isoformat() if c.hod_endorsed_at else None,
             "updated_at": c.updated_at.isoformat(),
             "confirmed_at": c.confirmed_at.isoformat() if c.confirmed_at else None,
         })

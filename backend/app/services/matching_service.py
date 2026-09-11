@@ -343,7 +343,7 @@ def _drive_public(db: Session, drive: PlacementDrive, extra: dict | None = None)
 
 def matches_for_student(db: Session, st: Student, statuses: tuple = ("OPEN",)) -> list[dict]:
     """Student -> ranked company opportunities (active companies' drives)."""
-    from app.models import Company
+    from app.models import Company, PlacementCandidate
     weights = get_settings().company_match_weights
     drives = db.execute(select(PlacementDrive).where(
         PlacementDrive.status.in_(statuses),
@@ -354,12 +354,22 @@ def matches_for_student(db: Session, st: Student, statuses: tuple = ("OPEN",)) -
     inp = _load_inputs(db).get(st.id)
     if inp is None:
         return []
+    cands = {c.drive_id: c for c in db.execute(
+        select(PlacementCandidate).where(PlacementCandidate.student_id == st.id)).scalars()}
     out = []
     for drive in drives:
         r = evaluate_one(drive, st, inp, weights)
         if r is None:
             continue
-        out.append(_drive_public(db, drive, r))
+        c = cands.get(drive.id)
+        extra = {
+            **r,
+            "candidate_id": c.id if c else None,
+            "candidate_status": c.status if c else None,
+            "hod_endorsed": bool(c.hod_endorsed) if c else False,
+            "hod_note": c.hod_note if c else None,
+        }
+        out.append(_drive_public(db, drive, extra))
     out.sort(key=lambda x: (0 if x["eligible"] else 1, -x["match_score"]))
     return out
 
@@ -367,10 +377,13 @@ def matches_for_student(db: Session, st: Student, statuses: tuple = ("OPEN",)) -
 def matches_for_drive(db: Session, drive: PlacementDrive,
                       student_ids: set[int] | None = None) -> list[dict]:
     """Drive -> ranked candidates (all analyzed students in the pool)."""
+    from app.models import PlacementCandidate
     s = get_settings()
     weights = s.company_match_weights
     students = {sid: db.get(Student, sid) for sid in (student_ids or [])}
     inputs = _load_inputs(db)
+    cands = {c.student_id: c for c in db.execute(
+        select(PlacementCandidate).where(PlacementCandidate.drive_id == drive.id)).scalars()}
     out = []
     for sid, st in students.items():
         if st is None or not st.is_active:
@@ -378,8 +391,14 @@ def matches_for_drive(db: Session, drive: PlacementDrive,
         r = evaluate_one(drive, st, inputs.get(sid, {}), weights)
         if r is None:
             continue
+        c = cands.get(sid)
         out.append({
             "student_id": sid,
+            "candidate_id": c.id if c else None,
+            "candidate_status": c.status if c else None,
+            "interest_expressed": bool(c),
+            "hod_endorsed": bool(c.hod_endorsed) if c else False,
+            "hod_note": c.hod_note if c else None,
             "usn": st.usn, "name": st.user.display_name if st.user else st.usn,
             "branch": st.branch, "semester": st.semester,
             "readiness": inputs[sid]["readiness"],

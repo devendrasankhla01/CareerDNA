@@ -258,20 +258,43 @@ def placement_status(db: Session, dept_code: str) -> dict:
     sid = {st.id: st for st in students}
     cands = db.execute(select(PlacementCandidate)).scalars().all()
     drives = {d.id: d for d in db.execute(select(PlacementDrive)).scalars()}
+    inp = matching_service._load_inputs(db)
     rows = []
     for c in sorted(cands, key=lambda x: x.updated_at, reverse=True):
         if c.student_id not in sid:
             continue
         st = sid[c.student_id]
         d = drives.get(c.drive_id)
+        st_inp = inp.get(st.id, {})
         rows.append({
-            "student_id": st.id, "name": st.user.display_name if st.user else st.usn,
-            "usn": st.usn, "semester": st.semester,
-            "company": d.company.name if d else None, "role": d.role if d else None,
-            "drive": d.title if d else None, "status": c.status,
+            "candidate_id": c.id,
+            "student_id": st.id,
+            "name": st.user.display_name if st.user else st.usn,
+            "usn": st.usn,
+            "semester": st.semester,
+            "readiness": st_inp.get("readiness"),
+            "category": st_inp.get("category"),
+            "cgpa": st_inp.get("cgpa"),
+            "drive_id": d.id if d else None,
+            "company": d.company.name if d else None,
+            "role": d.role if d else None,
+            "drive": d.title if d else None,
+            "status": c.status,
+            "match_score": c.match_score,
+            "hod_endorsed": bool(c.hod_endorsed),
+            "hod_note": c.hod_note,
+            "hod_endorsed_at": c.hod_endorsed_at.isoformat() if c.hod_endorsed_at else None,
+            "can_endorse": c.status == "INTERESTED",
             "updated_at": c.updated_at.isoformat(),
         })
-    return {"status": "ok", "rows": rows}
+    counts = {
+        "total": len(rows),
+        "pending_endorsement": sum(1 for r in rows if r["status"] == "INTERESTED"),
+        "hod_endorsed": sum(1 for r in rows if r["hod_endorsed"] or r["status"] == "HOD_APPROVED"),
+        "nominated": sum(1 for r in rows if r["status"] in ("NOMINATED", "COMPANY_REVIEWING", "SHORTLISTED", "INTERVIEW", "SELECTED", "PLACED")),
+        "placed": sum(1 for r in rows if r["status"] == "PLACED"),
+    }
+    return {"status": "ok", "rows": rows, "counts": counts}
 
 
 # ---------------------------------------------------------------- data updates

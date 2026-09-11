@@ -17,6 +17,9 @@ interface Candidate {
   matched_requirements: string[]; improvement_opportunities: string[];
   explanation: string[];
   candidate_status: string | null;
+  interest_expressed?: boolean;
+  hod_endorsed?: boolean;
+  hod_note?: string | null;
 }
 interface Pipeline {
   eligible: number; almost_eligible: number; not_eligible: number; interested: number;
@@ -271,6 +274,16 @@ function CandidateRow({ c, expanded, onExpand, checked, onCheck }: {
               : c.almost_eligible
                 ? <Badge cls="bg-amber-50 text-amber-700 border-amber-200">Almost</Badge>
                 : <Badge cls="bg-rose-50 text-rose-700 border-rose-200">Not eligible</Badge>}
+            {c.hod_endorsed && (
+              <div>
+                <Badge cls="bg-amber-50 text-amber-700 border-amber-200 text-[10.5px]">⭐ HOD Endorsed</Badge>
+              </div>
+            )}
+            {c.interest_expressed && !c.hod_endorsed && (
+              <div>
+                <Badge cls="bg-sky-50 text-sky-700 border-sky-200 text-[10.5px]">Student Interested</Badge>
+              </div>
+            )}
             {c.candidate_status && (
               <div className="text-[11px] font-medium text-navy-600">{c.candidate_status}</div>
             )}
@@ -291,6 +304,12 @@ function CandidateRow({ c, expanded, onExpand, checked, onCheck }: {
                 {c.explanation.map((l, i) => (
                   <p key={i} className="text-[12.5px] leading-relaxed text-slate-600">{l}</p>
                 ))}
+                {c.hod_endorsed && (
+                  <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/70 p-2.5 text-[12px] text-amber-900">
+                    <span className="font-semibold">⭐ HOD Endorsement: </span>
+                    {c.hod_note || "Recommended by Department for TPO nomination"}
+                  </div>
+                )}
               </div>
               <div>
                 <div className="mb-1.5 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">Requirements met</div>

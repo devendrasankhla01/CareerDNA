@@ -525,6 +525,7 @@ class PlacementDrive(Base):
 # Candidate pipeline statuses (per student per drive)
 CANDIDATE_STATUSES = [
     "INTERESTED",        # student expressed interest (institution policy)
+    "HOD_APPROVED",      # HOD / Department endorsed student to TPO
     "NOMINATED",         # TPO nominated (human institutional decision)
     "COMPANY_REVIEWING", # company is reviewing
     "SHORTLISTED",       # recruiter shortlist (human recruitment decision)
@@ -553,6 +554,12 @@ class PlacementCandidate(Base):
     computed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     profile_version: Mapped[int | None] = mapped_column(Integer)
     criteria_version: Mapped[int | None] = mapped_column(Integer)
+
+    # HOD department endorsement (department decision support)
+    hod_endorsed: Mapped[bool] = mapped_column(Boolean, default=False)
+    hod_endorsed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    hod_endorsed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    hod_note: Mapped[str | None] = mapped_column(Text)
 
     # human decisions (stored separately from AI output, per spec)
     nominated_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))

@@ -13,6 +13,10 @@ interface Opp {
   title: string; role: string; location?: string | null; ctc?: string | null;
   drive_date?: string | null; deadline?: string | null;
   status: string;
+  candidate_id?: number | null;
+  candidate_status?: string | null;
+  hod_endorsed?: boolean;
+  hod_note?: string | null;
   criteria: {
     min_cgpa?: number | null; min_tenth?: number | null; min_twelfth?: number | null;
     max_backlogs?: number | null; min_readiness?: number | null; min_coding?: number | null;
@@ -146,21 +150,44 @@ function OpportunityCard({ o, open, onToggle }: { o: Opp; open: boolean; onToggl
             <div className="text-2xl font-semibold tabular-nums text-navy-800">{fmt1(o.match_score)}</div>
           </div>
           <div className="w-28"><Bar value={o.match_score} tone={o.match_score >= 75 ? "teal" : o.match_score >= 55 ? "navy" : "amber"} /></div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <button className="btn-outline !py-1.5" onClick={onToggle}>
               {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               {open ? "Hide" : "Why?"}
             </button>
-            <button
-              className="btn-primary !py-1.5"
-              disabled={interest.isPending || o.eligible === false && !o.almost_eligible}
-              onClick={() => interest.mutate()}
-            >
-              {interest.isPending ? "…" : <><Check className="mr-1 h-4 w-4" />Express Interest</>}
-            </button>
+            {o.candidate_status ? (
+              <span className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold border ${
+                o.candidate_status === "INTERESTED" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                o.candidate_status === "HOD_APPROVED" ? "bg-teal-50 text-teal-700 border-teal-200" :
+                o.candidate_status === "NOMINATED" ? "bg-navy-50 text-navy-700 border-navy-200" :
+                o.candidate_status === "SHORTLISTED" ? "bg-violet-50 text-violet-700 border-violet-200" :
+                o.candidate_status === "SELECTED" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                o.candidate_status === "PLACED" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
+                "bg-slate-100 text-slate-600 border-slate-200"
+              }`}>
+                <Check className="h-3.5 w-3.5" />
+                {o.candidate_status === "INTERESTED" ? "Interest Expressed (Pending HOD)" :
+                 o.candidate_status === "HOD_APPROVED" ? "HOD Endorsed ⭐" :
+                 o.candidate_status === "NOMINATED" ? "Nominated to Company" :
+                 o.candidate_status === "SHORTLISTED" ? "Shortlisted" :
+                 o.candidate_status === "SELECTED" ? "Selected" :
+                 o.candidate_status === "PLACED" ? "Placed 🎉" : o.candidate_status}
+              </span>
+            ) : (
+              <button
+                className="btn-primary !py-1.5"
+                disabled={interest.isPending || (o.eligible === false && !o.almost_eligible)}
+                onClick={() => interest.mutate()}
+              >
+                {interest.isPending ? "…" : <><Check className="mr-1 h-4 w-4" />Express Interest</>}
+              </button>
+            )}
           </div>
-          {interest.isSuccess && (
-            <p className="text-[11.5px] font-medium text-teal-700">Interest recorded — TPO will review</p>
+          {interest.isSuccess && !o.candidate_status && (
+            <p className="text-[11.5px] font-medium text-teal-700">Interest recorded — HOD & TPO will review</p>
+          )}
+          {o.hod_note && (
+            <p className="text-[11px] italic text-slate-500">HOD note: {o.hod_note}</p>
           )}
         </div>
       </div>
